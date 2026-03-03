@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Team Mastery Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #06080a;
+  --ink2: #0d1117;
+  --ink3: #111820;
+  --surface: #141e27;
+  --surface2: #1a2535;
+  --border: #1e3045;
+  --border2: #243650;
+  --accent1: #e8ff47;   /* acid yellow */
+  --accent2: #00f5c4;   /* mint */
+  --accent3: #ff4655;   /* red */
+  --accent4: #4e9eff;   /* blue */
+  --accent5: #ff9a3c;   /* amber */
+  --accent6: #c77dff;   /* violet */
+  --text: #b8ccd8;
+  --text2: #6a8599;
+  --text3: #3d5568;
+  --white: #e8eef2;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* ── NOISE OVERLAY ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.6;
+}
+
+/* ── SCANLINES ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--ink2); }
+::-webkit-scrollbar-thumb { background: var(--accent1); }
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 24px 60px;
+  overflow: hidden;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(232,255,71,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232,255,71,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridDrift 20s linear infinite;
+}
+@keyframes gridDrift {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(60px); }
+}
+
+.hero-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 30%, var(--ink) 80%);
+}
+
+.hero-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: var(--accent1);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hero-tag::before, .hero-tag::after {
+  content: '';
+  width: 40px;
+  height: 1px;
+  background: var(--accent1);
+  opacity: 0.5;
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(72px, 14vw, 160px);
+  line-height: 0.88;
+  letter-spacing: -1px;
+  position: relative;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.hero-title span { color: var(--accent1); }
+
+.hero-sub {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(28px, 5vw, 56px);
+  letter-spacing: 8px;
+  color: var(--accent2);
+  margin-bottom: 28px;
+}
+
+.hero-desc {
+  font-size: 14px;
+  color: var(--text2);
+  max-width: 560px;
+  line-height: 1.8;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.stat-row {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+}
+.stat-box {
+  text-align: center;
+  padding: 16px 28px;
+  border: 1px solid var(--border2);
+  background: rgba(20,30,39,0.7);
+  backdrop-filter: blur(10px);
+}
+.stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 40px;
+  color: var(--accent1);
+  line-height: 1;
+}
+.stat-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  margin-top: 4px;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 3px;
+  animation: bounce 2s ease-in-out infinite;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.scroll-hint::after {
+  content: '';
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--text3), transparent);
+}
+@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(6px);} }
+
+/* ══════════════════════════════════════
+   PROGRESS COMMAND CENTER
+══════════════════════════════════════ */
+.cmd-center {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(6,8,10,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 40px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.cmd-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  color: var(--accent1);
+  letter-spacing: 3px;
+  white-space: nowrap;
+}
+.cmd-bars {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.cmd-phase-bar {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.cmd-phase-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.4s ease;
+}
+.cmd-total {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--accent1);
+  white-space: nowrap;
+}
+.cmd-total span {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* ══════════════════════════════════════
+   KILL CHAIN DIAGRAM
+══════════════════════════════════════ */
+.section { padding: 80px 40px; max-width: 1280px; margin: 0 auto; }
+
+.section-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 5px;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(36px, 5vw, 64px);
+  color: var(--white);
+  letter-spacing: 2px;
+  margin-bottom: 48px;
+  line-height: 1;
+}
+.section-title em { color: var(--accent1); font-style: normal; }
+
+.killchain {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  margin-bottom: 60px;
+  position: relative;
+}
+.killchain::before {
+  content: '';
+  position: absolute;
+  top: 44px;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent1) 20%, var(--accent3) 80%, transparent);
+  opacity: 0.3;
+}
+
+.kc-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 0 8px;
+  position: relative;
+  cursor: pointer;
+}
+.kc-step { cursor: pointer; position: relative; }
+.kc-step::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink2);
+  border: 1px solid var(--border2);
+  color: var(--accent1);
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+.kc-step:hover::after { opacity: 1; }
+.mitre-tactic::before {
+  content: '↗ VIEW';
+  position: absolute;
+  top: 6px; right: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 7px;
+  color: var(--accent1);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.mitre-tactic:hover::before { opacity: 0.7; }
+
+.kc-icon-wrap {
+  width: 88px;
+  height: 88px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  position: relative;
+  transition: all 0.3s ease;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+.kc-step:nth-child(1) .kc-icon-wrap { border-color: rgba(232,255,71,0.4); box-shadow: 0 0 20px rgba(232,255,71,0.08); }
+.kc-step:nth-child(2) .kc-icon-wrap { border-color: rgba(0,245,196,0.4); box-shadow: 0 0 20px rgba(0,245,196,0.08); }
+.kc-step:nth-child(3) .kc-icon-wrap { border-color: rgba(78,158,255,0.4); box-shadow: 0 0 20px rgba(78,158,255,0.08); }
+.kc-step:nth-child(4) .kc-icon-wrap { border-color: rgba(255,154,60,0.4); box-shadow: 0 0 20px rgba(255,154,60,0.08); }
+.kc-step:nth-child(5) .kc-icon-wrap { border-color: rgba(255,70,85,0.4); box-shadow: 0 0 20px rgba(255,70,85,0.08); }
+.kc-step:nth-child(6) .kc-icon-wrap { border-color: rgba(199,125,255,0.4); box-shadow: 0 0 20px rgba(199,125,255,0.08); }
+.kc-step:nth-child(7) .kc-icon-wrap { border-color: rgba(255,70,85,0.6); box-shadow: 0 0 30px rgba(255,70,85,0.15); }
+
+.kc-num {
+  position: absolute;
+  top: -8px; right: -8px;
+  width: 20px; height: 20px;
+  background: var(--ink);
+  border: 1px solid var(--border2);
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text3);
+}
+.kc-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text2);
+  text-align: center;
+  transition: color 0.2s;
+}
+.kc-tools {
+  font-size: 10px;
+  color: var(--text3);
+  text-align: center;
+  line-height: 1.7;
+}
+
+/* ══════════════════════════════════════
+   MITRE ATT&CK MINI-MAP
+══════════════════════════════════════ */
+.mitre-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 2px;
+  margin-bottom: 80px;
+}
+.mitre-tactic {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: visible;
+}
+.mitre-tactic::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s;
+}
+.mitre-tactic:hover::after { transform: scaleX(1); }
+.mitre-tactic:hover { border-color: var(--border2); background: var(--surface2); }
+.mt-id {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+.mt-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+.mt-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  margin-top: 6px;
+}
+
+/* tactic colors */
+.mt-recon .mitre-tactic::after { background: var(--accent1); }
+.mt-resource .mitre-tactic::after { background: var(--accent2); }
+.mt-initial .mitre-tactic::after { background: var(--accent4); }
+.mt-exec .mitre-tactic::after { background: var(--accent5); }
+.mt-persist .mitre-tactic::after { background: var(--accent3); }
+.mt-priv .mitre-tactic::after { background: var(--accent6); }
+.mt-defense .mitre-tactic::after { background: var(--accent1); }
+.mt-cred .mitre-tactic::after { background: var(--accent3); }
+.mt-disco .mitre-tactic::after { background: var(--accent2); }
+.mt-lateral .mitre-tactic::after { background: var(--accent5); }
+.mt-collect .mitre-tactic::after { background: var(--accent4); }
+.mt-c2 .mitre-tactic::after { background: var(--accent6); }
+.mt-exfil .mitre-tactic::after { background: var(--accent3); }
+.mt-impact .mitre-tactic::after { background: var(--accent3); }
+
+/* ══════════════════════════════════════
+   PHASE CARDS — MAIN ROADMAP
+══════════════════════════════════════ */
+.phases-wrapper {
+  position: relative;
+  padding: 0 40px 80px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* vertical timeline line */
+.phases-wrapper::before {
+  content: '';
+  position: absolute;
+  left: calc(40px + 28px);
+  top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--border2) 5%, var(--border2) 95%, transparent);
+}
+
+.phase {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 32px;
+  margin-bottom: 80px;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.phase.visible { opacity: 1; transform: translateX(0); }
+
+.phase-spine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.phase-node {
+  width: 56px;
+  height: 56px;
+  border: 1px solid;
+  background: var(--ink2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+}
+.phase-node-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  line-height: 1;
+}
+.phase-node-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 1px;
+  opacity: 0.6;
+}
+
+/* Phase accent colors */
+.p1 .phase-node { border-color: var(--accent1); color: var(--accent1); box-shadow: 0 0 24px rgba(232,255,71,0.15); }
+.p2 .phase-node { border-color: var(--accent2); color: var(--accent2); box-shadow: 0 0 24px rgba(0,245,196,0.15); }
+.p3 .phase-node { border-color: var(--accent4); color: var(--accent4); box-shadow: 0 0 24px rgba(78,158,255,0.15); }
+.p4 .phase-node { border-color: var(--accent5); color: var(--accent5); box-shadow: 0 0 24px rgba(255,154,60,0.15); }
+.p5 .phase-node { border-color: var(--accent3); color: var(--accent3); box-shadow: 0 0 24px rgba(255,70,85,0.15); }
+.p6 .phase-node { border-color: var(--accent6); color: var(--accent6); box-shadow: 0 0 24px rgba(199,125,255,0.15); }
+
+.phase-body { padding-top: 6px; }
+
+.phase-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.phase-meta {}
+.phase-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--text3);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.phase-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: 2px;
+  line-height: 1;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.p1 .phase-name span { color: var(--accent1); }
+.p2 .phase-name span { color: var(--accent2); }
+.p3 .phase-name span { color: var(--accent4); }
+.p4 .phase-name span { color: var(--accent5); }
+.p5 .phase-name span { color: var(--accent3); }
+.p6 .phase-name span { color: var(--accent6); }
+
+.phase-desc {
+  font-size: 13px;
+  color: var(--text2);
+  max-width: 620px;
+  line-height: 1.8;
+}
+
+.phase-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+.badge-duration {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  padding: 6px 14px;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  white-space: nowrap;
+}
+.badge-level {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  padding: 5px 14px;
+  letter-spacing: 2px;
+}
+.p1 .badge-level { background: rgba(232,255,71,0.1); color: var(--accent1); border: 1px solid rgba(232,255,71,0.3); }
+.p2 .badge-level { background: rgba(0,245,196,0.1); color: var(--accent2); border: 1px solid rgba(0,245,196,0.3); }
+.p3 .badge-level { background: rgba(78,158,255,0.1); color: var(--accent4); border: 1px solid rgba(78,158,255,0.3); }
+.p4 .badge-level { background: rgba(255,154,60,0.1); color: var(--accent5); border: 1px solid rgba(255,154,60,0.3); }
+.p5 .badge-level { background: rgba(255,70,85,0.1); color: var(--accent3); border: 1px solid rgba(255,70,85,0.3); }
+.p6 .badge-level { background: rgba(199,125,255,0.1); color: var(--accent6); border: 1px solid rgba(199,125,255,0.3); }
+
+/* ── Module Grid ── */
+.modules {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.module {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 20px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.module::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.module:hover { border-color: var(--border2); }
+.module:hover::before { opacity: 1; }
+
+.p1 .module:hover { box-shadow: 0 8px 32px rgba(232,255,71,0.06); }
+.p1 .module::before { background: linear-gradient(90deg, transparent, var(--accent1), transparent); }
+.p2 .module:hover { box-shadow: 0 8px 32px rgba(0,245,196,0.06); }
+.p2 .module::before { background: linear-gradient(90deg, transparent, var(--accent2), transparent); }
+.p3 .module:hover { box-shadow: 0 8px 32px rgba(78,158,255,0.06); }
+.p3 .module::before { background: linear-gradient(90deg, transparent, var(--accent4), transparent); }
+.p4 .module:hover { box-shadow: 0 8px 32px rgba(255,154,60,0.06); }
+.p4 .module::before { background: linear-gradient(90deg, transparent, var(--accent5), transparent); }
+.p5 .module:hover { box-shadow: 0 8px 32px rgba(255,70,85,0.06); }
+.p5 .module::before { background: linear-gradient(90deg, transparent, var(--accent3), transparent); }
+.p6 .module:hover { box-shadow: 0 8px 32px rgba(199,125,255,0.06); }
+.p6 .module::before { background: linear-gradient(90deg, transparent, var(--accent6), transparent); }
+
+.module-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.module-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.module-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white);
+  line-height: 1.3;
+}
+
+/* ── Skill Items ── */
+.skill-item {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  align-items: start;
+  gap: 10px;
+  padding: 7px 8px;
+  margin-bottom: 2px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  border-radius: 1px;
+}
+.skill-item:hover { background: var(--surface2); border-color: var(--border); }
+.skill-item input[type=checkbox] { display: none; }
+
+.skill-box {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--border2);
+  margin-top: 2px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 9px;
+}
+.skill-item input:checked ~ .skill-content .skill-name { opacity: 0.35; text-decoration: line-through; text-decoration-color: var(--text3); }
+.skill-item input:checked ~ .skill-box { color: var(--ink); }
+
+.p1 .skill-item input:checked ~ .skill-box { background: var(--accent1); border-color: var(--accent1); }
+.p2 .skill-item input:checked ~ .skill-box { background: var(--accent2); border-color: var(--accent2); }
+.p3 .skill-item input:checked ~ .skill-box { background: var(--accent4); border-color: var(--accent4); }
+.p4 .skill-item input:checked ~ .skill-box { background: var(--accent5); border-color: var(--accent5); }
+.p5 .skill-item input:checked ~ .skill-box { background: var(--accent3); border-color: var(--accent3); }
+.p6 .skill-item input:checked ~ .skill-box { background: var(--accent6); border-color: var(--accent6); }
+
+.skill-content {}
+.skill-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  transition: all 0.2s;
+  display: block;
+}
+.skill-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--text3);
+  margin-top: 2px;
+  line-height: 1.5;
+}
+.skill-diff {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  white-space: nowrap;
+  height: fit-content;
+  margin-top: 2px;
+}
+.diff-easy { border-color: rgba(232,255,71,0.3); color: var(--accent1); }
+.diff-med { border-color: rgba(255,154,60,0.3); color: var(--accent5); }
+.diff-hard { border-color: rgba(255,70,85,0.3); color: var(--accent3); }
+.diff-expert { border-color: rgba(199,125,255,0.3); color: var(--accent6); }
+
+/* ── Phase Progress ── */
+.phase-progress {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.pp-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text3);
+  white-space: nowrap;
+}
+.pp-bar {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  overflow: hidden;
+}
+.pp-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.4s ease;
+}
+.p1 .pp-fill { background: var(--accent1); }
+.p2 .pp-fill { background: var(--accent2); }
+.p3 .pp-fill { background: var(--accent4); }
+.p4 .pp-fill { background: var(--accent5); }
+.p5 .pp-fill { background: var(--accent3); }
+.p6 .pp-fill { background: var(--accent6); }
+.pp-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.p1 .pp-num { color: var(--accent1); }
+.p2 .pp-num { color: var(--accent2); }
+.p3 .pp-num { color: var(--accent4); }
+.p4 .pp-num { color: var(--accent5); }
+.p5 .pp-num { color: var(--accent3); }
+.p6 .pp-num { color: var(--accent6); }
+
+/* ── Certs Row ── */
+.certs-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.cert-pill {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  padding: 5px 12px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--text2);
+  letter-spacing: 1px;
+  transition: all 0.2s;
+  cursor: default;
+  position: relative;
+}
+.cert-pill.gold { border-color: rgba(232,255,71,0.5); color: var(--accent1); background: rgba(232,255,71,0.06); }
+.cert-pill.gold::before { content: '★ '; }
+.certs-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 3px;
+}
+
+/* ── Resources ── */
+.resources-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.resource-tag {
+  font-size: 11px;
+  padding: 4px 10px;
+  background: var(--ink3);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-family: 'Space Mono', monospace;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.resource-tag:hover { border-color: var(--border2); color: var(--white); }
+.resource-tag a, .cert-pill a, .lab-card a, .tool-cell a {
+  color: inherit; text-decoration: none; display: block;
+}
+a.ext-link {
+  color: inherit; text-decoration: none;
+}
+a.ext-link:hover { opacity: 0.85; }
+.cert-pill { cursor: pointer; }
+.cert-pill:hover { border-color: rgba(232,255,71,0.6); color: var(--accent1); }
+.kc-step { cursor: pointer; }
+.mitre-tactic { cursor: pointer; }
+.tool-cell { cursor: pointer; }
+.lab-card { cursor: pointer; }
+/* Scroll-to anchor highlight */
+.phase:target { animation: highlightPhase 1.5s ease; }
+@keyframes highlightPhase {
+  0% { box-shadow: 0 0 0 2px var(--accent1); }
+  100% { box-shadow: none; }
+}
+
+/* ══════════════════════════════════════
+   TOOLS ARSENAL
+══════════════════════════════════════ */
+.tools-section {
+  background: var(--ink2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 80px 40px;
+}
+.tools-inner { max-width: 1280px; margin: 0 auto; }
+
+.tools-matrix {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-top: 40px;
+}
+.tool-cell {
+  background: var(--ink2);
+  padding: 20px 16px;
+  transition: background 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+.tool-cell:hover { background: var(--surface); }
+.tool-cell:hover .tc-name { color: var(--accent1); }
+.tc-cat {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.tc-icon { font-size: 24px; display: block; margin-bottom: 8px; }
+.tc-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 4px;
+  transition: color 0.2s;
+}
+.tc-desc {
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.5;
+}
+.tc-tag {
+  position: absolute;
+  top: 12px; right: 12px;
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  padding: 2px 6px;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+}
+.tc-tag.free { border-color: rgba(0,245,196,0.4); color: var(--accent2); }
+.tc-tag.paid { border-color: rgba(255,70,85,0.3); color: var(--accent3); }
+
+/* ══════════════════════════════════════
+   LABS & PLATFORMS
+══════════════════════════════════════ */
+.labs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 40px;
+}
+.lab-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 24px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.lab-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 3px;
+  background: var(--accent1);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.3s;
+}
+.lab-card:hover::after { transform: scaleY(1); }
+.lab-card:hover { border-color: var(--border2); transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.4); }
+
+.lab-icon { font-size: 32px; display: block; margin-bottom: 14px; }
+.lab-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 2px;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+.lab-type {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.lab-desc {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+.lab-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.lab-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  padding: 3px 8px;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+}
+
+/* ══════════════════════════════════════
+   CAREER PATHS
+══════════════════════════════════════ */
+.careers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 40px;
+}
+.career-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 20px;
+  text-align: center;
+  transition: all 0.2s;
+}
+.career-card:hover { border-color: var(--accent1); background: var(--surface2); }
+.career-icon { font-size: 36px; display: block; margin-bottom: 10px; }
+.career-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--white); margin-bottom: 6px; }
+.career-salary { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent1); margin-bottom: 8px; }
+.career-desc { font-size: 11px; color: var(--text3); line-height: 1.6; }
+
+/* ══════════════════════════════════════
+   LEGAL NOTICE
+══════════════════════════════════════ */
+.legal-section {
+  margin: 0 40px 80px;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 40px;
+}
+.legal-box {
+  border: 1px solid rgba(255,70,85,0.3);
+  background: rgba(255,70,85,0.04);
+  padding: 28px 32px;
+  position: relative;
+  overflow: hidden;
+}
+.legal-box::before {
+  content: 'WARNING';
+  position: absolute;
+  top: 50%;
+  right: -20px;
+  transform: translateY(-50%) rotate(90deg);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 80px;
+  color: rgba(255,70,85,0.04);
+  letter-spacing: 4px;
+  white-space: nowrap;
+}
+.legal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  color: var(--accent3);
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.legal-text {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.9;
+  max-width: 800px;
+}
+.legal-text strong { color: var(--accent3); }
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+footer {
+  background: var(--ink2);
+  border-top: 1px solid var(--border);
+  padding: 40px;
+  text-align: center;
+}
+.footer-inner { max-width: 1280px; margin: 0 auto; }
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 4px;
+  color: var(--accent1);
+  margin-bottom: 16px;
+}
+.footer-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--text3);
+}
+.footer-credit {
+  margin-top: 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 2px;
+}
+.footer-author {
+  color: var(--accent1);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s, color 0.2s;
+}
+.footer-author:hover {
+  color: var(--white);
+  border-bottom-color: var(--accent1);
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+  .section, .phases-wrapper { padding-left: 20px; padding-right: 20px; }
+  .killchain { grid-template-columns: repeat(4, 1fr); row-gap: 24px; }
+  .killchain::before { display: none; }
+  .kc-tools { display: none; }
+  .cmd-center { padding: 10px 16px; }
+  .cmd-bars { display: none; }
+  .phases-wrapper::before { left: calc(20px + 28px); }
+  .phase { grid-template-columns: 56px 1fr; gap: 16px; }
+  .tools-section { padding: 60px 20px; }
+  .legal-section { padding: 0 20px; }
+}
+
+/* ══════════════════════════════════════
+   ENTRY ANIMATIONS
+══════════════════════════════════════ */
+@keyframes glitch {
+  0% { clip-path: inset(0 0 95% 0); transform: translate(-2px,0); }
+  10% { clip-path: inset(20% 0 60% 0); transform: translate(2px,0); }
+  20% { clip-path: inset(50% 0 30% 0); transform: translate(-1px,0); }
+  30% { clip-path: inset(70% 0 10% 0); transform: translate(1px,0); }
+  40% { clip-path: inset(0 0 0 0); transform: translate(0,0); }
+  100% { clip-path: inset(0 0 0 0); transform: translate(0,0); }
+}
+.hero-title::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: var(--accent2);
+  animation: glitch 6s steps(1) infinite;
+  opacity: 0.4;
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-tag">Authorized Security Testing · Career Path 2025</div>
+  <h1 class="hero-title" data-text="RED TEAM">RED <span>TEAM</span></h1>
+  <div class="hero-sub">Mastery Roadmap</div>
+  <p class="hero-desc">A comprehensive, structured path from absolute beginner to elite red team operator. Track your progress, master each phase, and build the skills demanded by Fortune 500 security teams.</p>
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-num">6</div><div class="stat-label">PHASES</div></div>
+    <div class="stat-box"><div class="stat-num">80+</div><div class="stat-label">SKILLS</div></div>
+    <div class="stat-box"><div class="stat-num">36</div><div class="stat-label">MONTHS</div></div>
+    <div class="stat-box"><div class="stat-num" id="heroCompletedNum">0%</div><div class="stat-label">COMPLETED</div></div>
+  </div>
+  <div class="scroll-hint">SCROLL TO BEGIN</div>
+</section>
+
+<!-- ══ STICKY PROGRESS ══ -->
+<div class="cmd-center">
+  <div class="cmd-logo">RT//MAP</div>
+  <div class="cmd-bars">
+    <div class="cmd-phase-bar" title="Phase 1: Foundations" onclick="document.getElementById('phase1').scrollIntoView({behavior:'smooth'})" style="cursor:pointer"><div class="cmd-phase-fill" id="cp1" style="background:var(--accent1)"></div></div>
+    <div class="cmd-phase-bar" title="Phase 2: Recon & Exploitation" onclick="document.getElementById('phase2').scrollIntoView({behavior:'smooth'})" style="cursor:pointer"><div class="cmd-phase-fill" id="cp2" style="background:var(--accent2)"></div></div>
+    <div class="cmd-phase-bar" title="Phase 3: Web, Network & AD" onclick="document.getElementById('phase3').scrollIntoView({behavior:'smooth'})" style="cursor:pointer"><div class="cmd-phase-fill" id="cp3" style="background:var(--accent4)"></div></div>
+    <div class="cmd-phase-bar" title="Phase 4: Red Team Ops" onclick="document.getElementById('phase4').scrollIntoView({behavior:'smooth'})" style="cursor:pointer"><div class="cmd-phase-fill" id="cp4" style="background:var(--accent5)"></div></div>
+    <div class="cmd-phase-bar" title="Phase 5: Exploit Dev & Malware" onclick="document.getElementById('phase5').scrollIntoView({behavior:'smooth'})" style="cursor:pointer"><div class="cmd-phase-fill" id="cp5" style="background:var(--accent3)"></div></div>
+    <div class="cmd-phase-bar" title="Phase 6: Team Lead & Research" onclick="document.getElementById('phase6').scrollIntoView({behavior:'smooth'})" style="cursor:pointer"><div class="cmd-phase-fill" id="cp6" style="background:var(--accent6)"></div></div>
+  </div>
+  <div class="cmd-total">PROGRESS <span id="totalPctTop">0</span>%</div>
+</div>
+
+<!-- ══ KILL CHAIN ══ -->
+<section class="section">
+  <div class="section-eyebrow">Attack Methodology</div>
+  <div class="section-title">The <em>Kill Chain</em></div>
+  <div class="killchain">
+    <div class="kc-step" onclick="document.getElementById('phase2').scrollIntoView({behavior:'smooth'})" title="→ Phase 2: Recon & Exploitation">
+      <div class="kc-icon-wrap">🔭<div class="kc-num">1</div></div>
+      <div class="kc-label">Reconnaissance</div>
+      <div class="kc-tools">Maltego · Shodan<br>theHarvester · Recon-ng</div>
+    </div>
+    <div class="kc-step" onclick="document.getElementById('phase4').scrollIntoView({behavior:'smooth'})" title="→ Phase 4: Red Team Ops">
+      <div class="kc-icon-wrap">🗺️<div class="kc-num">2</div></div>
+      <div class="kc-label">Weaponization</div>
+      <div class="kc-tools">MSFvenom · Cobalt Strike<br>GoPhish · SET</div>
+    </div>
+    <div class="kc-step" onclick="document.getElementById('phase5').scrollIntoView({behavior:'smooth'})" title="→ Phase 5: Exploit Dev & Malware">
+      <div class="kc-icon-wrap">📬<div class="kc-num">3</div></div>
+      <div class="kc-label">Delivery</div>
+      <div class="kc-tools">Phishing · Drive-by<br>USB Drop · Watering Hole</div>
+    </div>
+    <div class="kc-step" onclick="document.getElementById('phase2').scrollIntoView({behavior:'smooth'})" title="→ Phase 2: Recon & Exploitation">
+      <div class="kc-icon-wrap">💥<div class="kc-num">4</div></div>
+      <div class="kc-label">Exploitation</div>
+      <div class="kc-tools">Metasploit · Manual<br>0-day · CVE Exploits</div>
+    </div>
+    <div class="kc-step" onclick="document.getElementById('phase5').scrollIntoView({behavior:'smooth'})" title="→ Phase 5: Exploit Dev & Malware">
+      <div class="kc-icon-wrap">🪝<div class="kc-num">5</div></div>
+      <div class="kc-label">Installation</div>
+      <div class="kc-tools">Backdoors · RATs<br>Rootkits · Implants</div>
+    </div>
+    <div class="kc-step" onclick="document.getElementById('phase4').scrollIntoView({behavior:'smooth'})" title="→ Phase 4: Red Team Ops">
+      <div class="kc-icon-wrap">🌐<div class="kc-num">6</div></div>
+      <div class="kc-label">C2 Comms</div>
+      <div class="kc-tools">Cobalt Strike · Sliver<br>Havoc · Brute Ratel</div>
+    </div>
+    <div class="kc-step" onclick="document.getElementById('phase6').scrollIntoView({behavior:'smooth'})" title="→ Phase 6: Team Lead & Research">
+      <div class="kc-icon-wrap">🎯<div class="kc-num">7</div></div>
+      <div class="kc-label">Objectives</div>
+      <div class="kc-tools">Data Exfil · Ransomware<br>Lateral Movement</div>
+    </div>
+  </div>
+
+  <!-- MITRE ATT&CK -->
+  <div class="section-eyebrow" style="margin-bottom:12px;">MITRE ATT&CK Framework — 14 Tactics</div>
+  <div class="mitre-grid">
+    <div class="mt-recon"><div class="mitre-tactic" onclick="window.open('https://attack.mitre.org/tactics/TA0043/','_blank')"><div class="mt-id">TA0043</div><div class="mt-name">Reconnaissance</div><div class="mt-count" style="color:var(--accent1)">43 techniques</div></div></div>
+    <div class="mt-resource"><div class="mitre-tactic" onclick="window.open('https://attack.mitre.org/tactics/TA0042/','_blank')"><div class="mt-id">TA0042</div><div class="mt-name">Resource Development</div><div class="mt-count" style="color:var(--accent2)">8 techniques</div></div></div>
+    <div class="mt-initial"><div class="mitre-tactic" onclick="window.open('https://attack.mitre.org/tactics/TA0001/','_blank')"><div class="mt-id">TA0001</div><div class="mt-name">Initial Access</div><div class="mt-count" style="color:var(--accent4)">10 techniques</div></div></div>
+    <div class="mt-exec"><div class="mitre-tactic" onclick="window.open('https://attack.mitre.org/tactics/TA0002/','_blank')"><div class="mt-id">TA0002</div><div class="mt-name">Execution</div><div class="mt-count" style="color:var(--accent5)">14 techniques</div></div></div>
+    <div class="mt-persist"><div class="mitre-tactic" onclick="window.open('https://attack.mitre.org/tactics/TA0003/','_blank')"><div class="mt-id">TA0003</div><div class="mt-name">Persistence</div><div class="mt-count" style="color:var(--accent3)">19 techniques</div></div></div>
+    <div class="mt-priv"><div class="mitre-tactic" onclick="window.open('https://attack.mitre.org/tactics/TA0004/','_blank')"><div class="mt-id">TA0004</div><div class="mt-name">Privilege Escalation</div><div class="mt-count" style="color:var(--accent6)">14 techniques</div></div></div>
+    <div class="mt-defense"><div class="mitre-tactic" onclick="window.open('https://attack.mitre.org/tactics/TA0005/','_blank')"><div class="mt-id">TA0005</div><div class="mt-name">Defense Evasion</div><div class="mt-count" style="color:var(--accent1)">42 techniques</div></div></div>
+    <div class="mt-cred"><div class="mitre-tactic" onclick="window.open('https://attack.mitre.org/tactics/TA0006/','_blank')"><div class="mt-id">TA0006</div><div class="mt-name">Credential Access</div><div class="mt-count" style="color:var(--accent3)">17 techniques</div></div></div>
+    <div class="mt-disco"><div class="mitre-tactic" onclick="window.open('https://attack.mitre.org/tactics/TA0007/','_blank')"><div class="mt-id">TA0007</div><div class="mt-name">Discovery</div><div class="mt-count" style="color:var(--accent2)">31 techniques</div></div></div>
+    <div class="mt-lateral"><div class="mitre-tactic" onclick="window.open('https://attack.mitre.org/tactics/TA0008/','_blank')"><div class="mt-id">TA0008</div><div class="mt-name">Lateral Movement</div><div class="mt-count" style="color:var(--accent5)">9 techniques</div></div></div>
+    <div class="mt-collect"><div class="mitre-tactic" onclick="window.open('https://attack.mitre.org/tactics/TA0009/','_blank')"><div class="mt-id">TA0009</div><div class="mt-name">Collection</div><div class="mt-count" style="color:var(--accent4)">17 techniques</div></div></div>
+    <div class="mt-c2"><div class="mitre-tactic" onclick="window.open('https://attack.mitre.org/tactics/TA0011/','_blank')"><div class="mt-id">TA0011</div><div class="mt-name">Command & Control</div><div class="mt-count" style="color:var(--accent6)">18 techniques</div></div></div>
+    <div class="mt-exfil"><div class="mitre-tactic" onclick="window.open('https://attack.mitre.org/tactics/TA0010/','_blank')"><div class="mt-id">TA0010</div><div class="mt-name">Exfiltration</div><div class="mt-count" style="color:var(--accent3)">9 techniques</div></div></div>
+    <div class="mt-impact"><div class="mitre-tactic" onclick="window.open('https://attack.mitre.org/tactics/TA0040/','_blank')"><div class="mt-id">TA0040</div><div class="mt-name">Impact</div><div class="mt-count" style="color:var(--accent3)">13 techniques</div></div></div>
+  </div>
+</section>
+
+<!-- ══════════ PHASES ══════════ -->
+<div class="phases-wrapper">
+
+<!-- ── PHASE 1 ── -->
+<div class="phase p1" id="phase1">
+  <div class="phase-spine"><div class="phase-node"><div class="phase-node-num">01</div><div class="phase-node-label">PHASE</div></div></div>
+  <div class="phase-body">
+    <div class="phase-header">
+      <div class="phase-meta">
+        <div class="phase-eyebrow">Starting Point · Months 0–3</div>
+        <div class="phase-name">FOUNDATIONS <span>&amp; MINDSET</span></div>
+        <div class="phase-desc">Build an unbreakable technical foundation. Every elite hacker started here. Learn how computers talk to each other, master your operating environment, and write your first attack scripts. No shortcuts exist — this phase determines everything.</div>
+      </div>
+      <div class="phase-badges">
+        <div class="badge-duration">⏱ 0 – 3 MONTHS</div>
+        <div class="badge-level">BEGINNER</div>
+      </div>
+    </div>
+    <div class="phase-progress"><span class="pp-label">PHASE PROGRESS</span><div class="pp-bar"><div class="pp-fill" id="pp1"></div></div><span class="pp-num" id="pn1">0 / 0</span></div>
+    <div class="modules">
+      <div class="module">
+        <div class="module-header"><div class="module-icon">🌐</div><div class="module-title">Networking<br>Fundamentals</div></div>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">OSI & TCP/IP Models</span><span class="skill-sub">Layers 1–7, encapsulation, how packets travel</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">DNS, DHCP, ARP</span><span class="skill-sub">Resolution, poisoning basics, cache attacks</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">HTTP/S & TLS</span><span class="skill-sub">Request/response cycle, certificates, TLS handshake</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Subnetting & CIDR</span><span class="skill-sub">IPv4 ranges, /24 /16 /8, broadcast domains</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Wireshark Packet Analysis</span><span class="skill-sub">Filters, dissectors, follow TCP stream</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Routing & Switching Basics</span><span class="skill-sub">VLANs, STP, default gateways, NAT</span></div><div class="skill-diff diff-med">MED</div></label>
+      </div>
+      <div class="module">
+        <div class="module-header"><div class="module-icon">🐧</div><div class="module-title">Linux &<br>Windows Mastery</div></div>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Linux CLI Fluency</span><span class="skill-sub">bash, pipes, grep, awk, sed, cron, systemd</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">File Permissions & Users</span><span class="skill-sub">chmod, chown, SUID/GUID, /etc/passwd, /etc/shadow</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Windows Registry & Processes</span><span class="skill-sub">HKLM, HKCU, Task Manager, Services, DLL paths</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Kali Linux Environment</span><span class="skill-sub">VM setup, tool suite, workspace configuration</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">PowerShell Scripting</span><span class="skill-sub">Cmdlets, pipelines, remoting, execution policy</span></div><div class="skill-diff diff-med">MED</div></label>
+      </div>
+      <div class="module">
+        <div class="module-header"><div class="module-icon">🐍</div><div class="module-title">Programming<br>for Hackers</div></div>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Python 3 Fundamentals</span><span class="skill-sub">Data types, functions, classes, file I/O</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Python Networking</span><span class="skill-sub">socket, requests, scapy — craft raw packets</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Bash Automation</span><span class="skill-sub">Recon scripts, loop scanners, log parsers</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Git & Version Control</span><span class="skill-sub">Repos, branches, secrets in commits, GitHub OSINT</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="1"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Basic Assembly x86</span><span class="skill-sub">Registers, stack, calling conventions — foundation for exploit dev</span></div><div class="skill-diff diff-hard">HARD</div></label>
+      </div>
+    </div>
+    <div class="certs-row">
+      <span class="certs-label">TARGET CERTS //</span>
+      <a class="cert-pill" href="https://www.comptia.org/certifications/network" target="_blank" rel="noopener">CompTIA Network+ ↗</a>
+      <a class="cert-pill" href="https://www.comptia.org/certifications/security" target="_blank" rel="noopener">CompTIA Security+ ↗</a>
+      <a class="cert-pill" href="https://grow.google/certificates/cybersecurity/" target="_blank" rel="noopener">Google Cybersecurity Certificate ↗</a>
+      <a class="cert-pill" href="https://www.isc2.org/Certifications/CC" target="_blank" rel="noopener">ISC2 CC ↗</a>
+    </div>
+    <div class="resources-row">
+      <span class="certs-label">RESOURCES //</span>
+      <a class="resource-tag" href="https://tryhackme.com/path/outline/presecurity" target="_blank" rel="noopener">TryHackMe Pre-Security ↗</a>
+      <a class="resource-tag" href="https://overthewire.org/wargames/bandit/" target="_blank" rel="noopener">OverTheWire: Bandit ↗</a>
+      <a class="resource-tag" href="https://app.hackthebox.com/starting-point" target="_blank" rel="noopener">HackTheBox Starting Point ↗</a>
+      <a class="resource-tag" href="https://www.professormesser.com/network-plus/n10-008/n10-008-video/n10-008-training-course/" target="_blank" rel="noopener">Professor Messer Net+ ↗</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE 2 ── -->
+<div class="phase p2" id="phase2">
+  <div class="phase-spine"><div class="phase-node"><div class="phase-node-num">02</div><div class="phase-node-label">PHASE</div></div></div>
+  <div class="phase-body">
+    <div class="phase-header">
+      <div class="phase-meta">
+        <div class="phase-eyebrow">Core Skills · Months 3–9</div>
+        <div class="phase-name">RECON <span>&amp; EXPLOITATION</span></div>
+        <div class="phase-desc">Learn to see what attackers see. Map attack surfaces with professional tools, understand vulnerability classes, and execute your first real exploits in controlled lab environments. This is where you become a hacker.</div>
+      </div>
+      <div class="phase-badges">
+        <div class="badge-duration">⏱ 3 – 9 MONTHS</div>
+        <div class="badge-level">JUNIOR</div>
+      </div>
+    </div>
+    <div class="phase-progress"><span class="pp-label">PHASE PROGRESS</span><div class="pp-bar"><div class="pp-fill" id="pp2"></div></div><span class="pp-num" id="pn2">0 / 0</span></div>
+    <div class="modules">
+      <div class="module">
+        <div class="module-header"><div class="module-icon">🕵️</div><div class="module-title">OSINT &<br>Reconnaissance</div></div>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Passive Recon Methodology</span><span class="skill-sub">WHOIS, DNS records, Certificate Transparency, ASN lookup</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Maltego Graph Analysis</span><span class="skill-sub">Transforms, entity mapping, footprint visualization</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Shodan / Censys / FOFA</span><span class="skill-sub">Internet-facing device search, banner grabbing, filters</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Google Dorking</span><span class="skill-sub">site:, filetype:, inurl:, intitle: advanced operators</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Subdomain Enumeration</span><span class="skill-sub">amass, subfinder, dnsx, virtual host discovery</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Social Media & People OSINT</span><span class="skill-sub">LinkedIn, breach data correlation, OSINT framework</span></div><div class="skill-diff diff-med">MED</div></label>
+      </div>
+      <div class="module">
+        <div class="module-header"><div class="module-icon">📡</div><div class="module-title">Scanning &<br>Enumeration</div></div>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Nmap Advanced Scanning</span><span class="skill-sub">SYN, UDP, version detection, NSE scripts, OS fingerprint</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Vulnerability Scanning</span><span class="skill-sub">Nessus, OpenVAS, Nuclei — severity triage, false positives</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">SMB / FTP / SSH Enum</span><span class="skill-sub">enum4linux, smbclient, anonymous login, credential spraying</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Web Directory Bruteforce</span><span class="skill-sub">gobuster, feroxbuster, ffuf — wordlists, extensions, recursion</span></div><div class="skill-diff diff-easy">EASY</div></label>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Service Banner Grabbing</span><span class="skill-sub">netcat, telnet, curl — manual version fingerprinting</span></div><div class="skill-diff diff-easy">EASY</div></label>
+      </div>
+      <div class="module">
+        <div class="module-header"><div class="module-icon">💣</div><div class="module-title">First Exploitation<br>Steps</div></div>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Metasploit Framework</span><span class="skill-sub">Modules, msfconsole, payloads, post-exploitation</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Password Attacks</span><span class="skill-sub">Hashcat modes, John the Ripper, rule-based cracking, rainbow tables</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Searchsploit & ExploitDB</span><span class="skill-sub">Finding, adapting, and testing public exploits</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Reverse & Bind Shells</span><span class="skill-sub">netcat, bash one-liners, upgrading TTYs with pty</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Linux Privilege Escalation</span><span class="skill-sub">SUID bins, sudo misconfig, cron jobs, kernel exploits, linpeas</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="2"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Windows Privilege Escalation</span><span class="skill-sub">AlwaysInstallElevated, unquoted paths, token impersonation</span></div><div class="skill-diff diff-hard">HARD</div></label>
+      </div>
+    </div>
+    <div class="certs-row">
+      <span class="certs-label">TARGET CERTS //</span>
+      <a class="cert-pill gold" href="https://elearnsecurity.com/product/ejpt-certification/" target="_blank" rel="noopener">eJPT (eLearnSecurity) ↗</a>
+      <a class="cert-pill" href="https://www.eccouncil.org/train-certify/certified-ethical-hacker-ceh/" target="_blank" rel="noopener">CEH ↗</a>
+      <a class="cert-pill" href="https://www.comptia.org/certifications/pentest" target="_blank" rel="noopener">CompTIA PenTest+ ↗</a>
+    </div>
+    <div class="resources-row">
+      <span class="certs-label">RESOURCES //</span>
+      <a class="resource-tag" href="https://tryhackme.com/path/outline/jrpenetrationtester" target="_blank" rel="noopener">TryHackMe Jr Pentester ↗</a>
+      <a class="resource-tag" href="https://app.hackthebox.com/machines" target="_blank" rel="noopener">HackTheBox Easy Machines ↗</a>
+      <a class="resource-tag" href="https://portswigger.net/web-security" target="_blank" rel="noopener">PortSwigger Web Academy ↗</a>
+      <a class="resource-tag" href="https://tcm-sec.com/courses/" target="_blank" rel="noopener">TCM Security Courses ↗</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE 3 ── -->
+<div class="phase p3" id="phase3">
+  <div class="phase-spine"><div class="phase-node"><div class="phase-node-num">03</div><div class="phase-node-label">PHASE</div></div></div>
+  <div class="phase-body">
+    <div class="phase-header">
+      <div class="phase-meta">
+        <div class="phase-eyebrow">Intermediate · Months 9–18</div>
+        <div class="phase-name">WEB, NETWORK <span>&amp; ACTIVE DIRECTORY</span></div>
+        <div class="phase-desc">Master the three domains that appear in nearly every professional engagement. Deep web application attacks, network-level exploitation, and Active Directory — the crown jewel of enterprise networks. The OSCP lives in this phase.</div>
+      </div>
+      <div class="phase-badges">
+        <div class="badge-duration">⏱ 9 – 18 MONTHS</div>
+        <div class="badge-level">INTERMEDIATE</div>
+      </div>
+    </div>
+    <div class="phase-progress"><span class="pp-label">PHASE PROGRESS</span><div class="pp-bar"><div class="pp-fill" id="pp3"></div></div><span class="pp-num" id="pn3">0 / 0</span></div>
+    <div class="modules">
+      <div class="module">
+        <div class="module-header"><div class="module-icon">🌍</div><div class="module-title">Web Application<br>Pentesting</div></div>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Burp Suite Pro Mastery</span><span class="skill-sub">Interceptor, Intruder, Repeater, Scanner, Extensions</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">SQL Injection (Manual)</span><span class="skill-sub">Error, Blind, Time-based, OOB, sqlmap, WAF bypass</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">XSS — Stored, Reflected, DOM</span><span class="skill-sub">CSP bypass, filter evasion, cookie theft, keylogging</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">SSRF & XXE</span><span class="skill-sub">Internal network pivoting, cloud metadata, OOB exfil</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">IDOR & Access Control</span><span class="skill-sub">Horizontal/vertical privilege escalation via API</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">JWT & OAuth 2.0 Attacks</span><span class="skill-sub">alg:none, key confusion, auth code interception</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">API Pentesting</span><span class="skill-sub">REST/GraphQL introspection, mass assignment, broken object level auth</span></div><div class="skill-diff diff-hard">HARD</div></label>
+      </div>
+      <div class="module">
+        <div class="module-header"><div class="module-icon">🏛️</div><div class="module-title">Active Directory<br>Attacks</div></div>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">AD Enumeration</span><span class="skill-sub">BloodHound/SharpHound, PowerView, ldapdomaindump</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Kerberoasting</span><span class="skill-sub">SPN discovery, TGS extraction, offline cracking</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">AS-REP Roasting</span><span class="skill-sub">Pre-auth disabled accounts, hashcat mode 18200</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Pass-the-Hash / Pass-the-Ticket</span><span class="skill-sub">NTLM relay, Impacket psexec, wmiexec, smbexec</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Mimikatz & LSASS Dumping</span><span class="skill-sub">sekurlsa::logonpasswords, credential vault, dpapi</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">ACL Abuse & GPO Attacks</span><span class="skill-sub">WriteDACL, GenericAll, GPO abuse with SharpGPOAbuse</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Domain Dominance</span><span class="skill-sub">DCSync, Golden/Silver Tickets, skeleton key</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+      </div>
+      <div class="module">
+        <div class="module-header"><div class="module-icon">📶</div><div class="module-title">Network<br>Exploitation</div></div>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">LLMNR/NBT-NS Poisoning</span><span class="skill-sub">Responder, hash capture, relay attacks</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">NTLM Relay Attacks</span><span class="skill-sub">ntlmrelayx, SMB signing, IPv6 MitM with mitm6</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Tunneling & Pivoting</span><span class="skill-sub">SSH tunnels, chisel, ligolo-ng, proxychains, port forwarding</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Wireless Attacks</span><span class="skill-sub">WPA2 cracking, PMKID, Evil Twin, deauth, captive portals</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="3"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">VLAN Hopping & 802.1Q</span><span class="skill-sub">Double tagging, trunk negotiation attacks</span></div><div class="skill-diff diff-hard">HARD</div></label>
+      </div>
+    </div>
+    <div class="certs-row">
+      <span class="certs-label">TARGET CERTS //</span>
+      <a class="cert-pill gold" href="https://www.offsec.com/courses-and-certifications/oscp-certification/" target="_blank" rel="noopener">OSCP ⭐ Gold Standard ↗</a>
+      <a class="cert-pill" href="https://portswigger.net/web-security/certification" target="_blank" rel="noopener">BSCP (Burp Suite) ↗</a>
+      <a class="cert-pill" href="https://certifications.tcm-sec.com/pnpt/" target="_blank" rel="noopener">PNPT (TCM) ↗</a>
+      <a class="cert-pill" href="https://academy.hackthebox.com/preview/certifications/htb-certified-penetration-testing-specialist" target="_blank" rel="noopener">CPTS (HTB) ↗</a>
+    </div>
+    <div class="resources-row">
+      <span class="certs-label">RESOURCES //</span>
+      <a class="resource-tag" href="https://tcm-sec.com/practical-ethical-hacking/" target="_blank" rel="noopener">TCM PEH Course ↗</a>
+      <a class="resource-tag" href="https://app.hackthebox.com/prolabs/overview/offshore" target="_blank" rel="noopener">HTB Pro Labs: Offshore ↗</a>
+      <a class="resource-tag" href="https://portswigger.net/web-security/all-labs" target="_blank" rel="noopener">PortSwigger All Labs ↗</a>
+      <a class="resource-tag" href="https://www.pentesteracademy.com/activedirectorylab" target="_blank" rel="noopener">Pentester Academy AD ↗</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE 4 ── -->
+<div class="phase p4" id="phase4">
+  <div class="phase-spine"><div class="phase-node"><div class="phase-node-num">04</div><div class="phase-node-label">PHASE</div></div></div>
+  <div class="phase-body">
+    <div class="phase-header">
+      <div class="phase-meta">
+        <div class="phase-eyebrow">Advanced · Months 18–27</div>
+        <div class="phase-name">RED TEAM <span>OPERATIONS</span></div>
+        <div class="phase-desc">Operate like an APT. Deploy and manage C2 infrastructure, evade modern EDR solutions, attack cloud environments, and execute full red team campaigns with realistic threat actor TTPs mapped to MITRE ATT&CK.</div>
+      </div>
+      <div class="phase-badges">
+        <div class="badge-duration">⏱ 18 – 27 MONTHS</div>
+        <div class="badge-level">ADVANCED</div>
+      </div>
+    </div>
+    <div class="phase-progress"><span class="pp-label">PHASE PROGRESS</span><div class="pp-bar"><div class="pp-fill" id="pp4"></div></div><span class="pp-num" id="pn4">0 / 0</span></div>
+    <div class="modules">
+      <div class="module">
+        <div class="module-header"><div class="module-icon">🎮</div><div class="module-title">C2 Frameworks &<br>Infrastructure</div></div>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Cobalt Strike</span><span class="skill-sub">Beacons, malleable C2, teamserver, aggressor scripts</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Sliver C2 (Open Source)</span><span class="skill-sub">Implants, mTLS, HTTP/S, DNS channels, armory</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Havoc / Brute Ratel</span><span class="skill-sub">Alternative frameworks, daemon configuration</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Redirectors & Infrastructure</span><span class="skill-sub">Nginx/Apache redirectors, domain fronting, CDN abuse</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">OPSEC Fundamentals</span><span class="skill-sub">Operator mistakes, log management, attribution avoidance</span></div><div class="skill-diff diff-hard">HARD</div></label>
+      </div>
+      <div class="module">
+        <div class="module-header"><div class="module-icon">🥷</div><div class="module-title">Evasion &<br>AV/EDR Bypass</div></div>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">AMSI Bypass Techniques</span><span class="skill-sub">Patching, obfuscation, reflection, provider bypass</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">ETW Patching</span><span class="skill-sub">Event Tracing for Windows, kernel callbacks, unhooking</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Payload Obfuscation</span><span class="skill-sub">Encoding, encryption, custom loaders, sleep masking</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Process Injection</span><span class="skill-sub">DLL injection, process hollowing, thread hijacking</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Living off the Land (LOLBins)</span><span class="skill-sub">certutil, mshta, wmic, regsvr32, rundll32 abuse</span></div><div class="skill-diff diff-hard">HARD</div></label>
+      </div>
+      <div class="module">
+        <div class="module-header"><div class="module-icon">☁️</div><div class="module-title">Cloud &<br>Container Attacks</div></div>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">AWS Attack Paths</span><span class="skill-sub">SSRF to metadata, IAM enum, S3 misconfig, EC2 roles</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Azure / Entra ID Attacks</span><span class="skill-sub">Token theft, app registrations, PIM abuse, AADInternals</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">GCP Exploitation</span><span class="skill-sub">Service account abuse, metadata API, workload identity</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Container Escapes</span><span class="skill-sub">Privileged Docker, cgroup abuse, runc exploitation, K8s RBAC</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+        <label class="skill-item" data-phase="4"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Kubernetes Attacks</span><span class="skill-sub">RBAC misconfiguration, etcd access, pod escape, service mesh</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+      </div>
+    </div>
+    <div class="certs-row">
+      <span class="certs-label">TARGET CERTS //</span>
+      <a class="cert-pill gold" href="https://training.zeropointsecurity.co.uk/courses/red-team-ops" target="_blank" rel="noopener">CRTO (Red Team Ops) ↗</a>
+      <a class="cert-pill gold" href="https://www.alteredsecurity.com/redteamlab" target="_blank" rel="noopener">CRTE (Red Team Expert) ↗</a>
+      <a class="cert-pill" href="https://www.offsec.com/courses-and-certifications/pen-300-osep/" target="_blank" rel="noopener">OSEP ↗</a>
+      <a class="cert-pill" href="https://aws.amazon.com/certification/certified-security-specialty/" target="_blank" rel="noopener">AWS Security Specialty ↗</a>
+    </div>
+    <div class="resources-row">
+      <span class="certs-label">RESOURCES //</span>
+      <a class="resource-tag" href="https://institute.sektor7.net/rto-maldev-essentials" target="_blank" rel="noopener">RTO Course (Sektor7) ↗</a>
+      <a class="resource-tag" href="https://app.hackthebox.com/prolabs/overview/rastalabs" target="_blank" rel="noopener">HTB Pro Labs: RastaLabs ↗</a>
+      <a class="resource-tag" href="https://github.com/RhinoSecurityLabs/cloudgoat" target="_blank" rel="noopener">CloudGoat (Rhino Security) ↗</a>
+      <a class="resource-tag" href="https://maldevacademy.com/" target="_blank" rel="noopener">MalDev Academy ↗</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE 5 ── -->
+<div class="phase p5" id="phase5">
+  <div class="phase-spine"><div class="phase-node"><div class="phase-node-num">05</div><div class="phase-node-label">PHASE</div></div></div>
+  <div class="phase-body">
+    <div class="phase-header">
+      <div class="phase-meta">
+        <div class="phase-eyebrow">Expert · Months 27–36</div>
+        <div class="phase-name">EXPLOIT DEV <span>&amp; MALWARE</span></div>
+        <div class="phase-desc">Enter the elite tier. Write your own exploits, develop custom implants, understand the binary level, and research vulnerabilities before the world knows they exist. This is where red teamers become adversary simulation specialists.</div>
+      </div>
+      <div class="phase-badges">
+        <div class="badge-duration">⏱ 27 – 36 MONTHS</div>
+        <div class="badge-level">EXPERT</div>
+      </div>
+    </div>
+    <div class="phase-progress"><span class="pp-label">PHASE PROGRESS</span><div class="pp-bar"><div class="pp-fill" id="pp5"></div></div><span class="pp-num" id="pn5">0 / 0</span></div>
+    <div class="modules">
+      <div class="module">
+        <div class="module-header"><div class="module-icon">⚗️</div><div class="module-title">Exploit<br>Development</div></div>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Stack Buffer Overflows</span><span class="skill-sub">EIP control, NOP sleds, shellcode placement, bad chars</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">SEH-based Exploits</span><span class="skill-sub">Structured exception handlers, POP POP RET chains</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Return-Oriented Programming</span><span class="skill-sub">Gadget chains, DEP/NX bypass, ROPgadget, pwntools</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Heap Exploitation</span><span class="skill-sub">Use-after-free, heap spray, tcache poisoning, fastbin attacks</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Fuzzing & CVE Research</span><span class="skill-sub">AFL++, libFuzzer, grammar fuzzers, crash triage</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Reverse Engineering</span><span class="skill-sub">IDA Pro, Ghidra, Binary Ninja, x64dbg, anti-debug bypass</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+      </div>
+      <div class="module">
+        <div class="module-header"><div class="module-icon">🦠</div><div class="module-title">Malware<br>Development</div></div>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">C/C++ Implant Development</span><span class="skill-sub">Windows API, syscalls, reflective DLL loading</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Custom Shellcode Writing</span><span class="skill-sub">Position-independent code, encoder/decoder, syscall stubs</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Rootkit Concepts</span><span class="skill-sub">Kernel drivers, DKOM, hook-based hiding, SSDT</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Anti-Analysis Techniques</span><span class="skill-sub">VM/sandbox detection, timing attacks, API obfuscation</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Persistence Mechanisms</span><span class="skill-sub">Registry, WMI subscriptions, COM hijack, bootkit</span></div><div class="skill-diff diff-hard">HARD</div></label>
+      </div>
+      <div class="module">
+        <div class="module-header"><div class="module-icon">🏢</div><div class="module-title">Physical &<br>Social Engineering</div></div>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Lock Picking & Physical Entry</span><span class="skill-sub">Pin tumbler, wafer, disc detainer picks, bypass tools</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">RFID / Badge Cloning</span><span class="skill-sub">Proxmark3, HID/EM4100 cloning, Wiegand sniffing</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Phishing Campaign Design</span><span class="skill-sub">GoPhish, Evilginx2, O365 proxy, BEC simulation</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="5"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Vishing & Pretexting</span><span class="skill-sub">Call scripts, impersonation scenarios, IT desk social eng</span></div><div class="skill-diff diff-med">MED</div></label>
+      </div>
+    </div>
+    <div class="certs-row">
+      <span class="certs-label">TARGET CERTS //</span>
+      <a class="cert-pill gold" href="https://www.offsec.com/courses-and-certifications/exp-301-osed/" target="_blank" rel="noopener">OSED (Exploit Dev) ↗</a>
+      <a class="cert-pill gold" href="https://www.offsec.com/courses-and-certifications/advanced-windows-exploitation-awae-osee/" target="_blank" rel="noopener">OSEE (Advanced Exploit) ↗</a>
+      <a class="cert-pill" href="https://www.giac.org/certifications/reverse-engineering-malware-grem/" target="_blank" rel="noopener">GREM (Malware) ↗</a>
+      <a class="cert-pill" href="https://training.zeropointsecurity.co.uk/courses/red-team-lead" target="_blank" rel="noopener">CRTL ↗</a>
+    </div>
+    <div class="resources-row">
+      <span class="certs-label">RESOURCES //</span>
+      <a class="resource-tag" href="https://pwn.college/" target="_blank" rel="noopener">pwn.college ↗</a>
+      <a class="resource-tag" href="https://exploit.education/" target="_blank" rel="noopener">exploit.education ↗</a>
+      <a class="resource-tag" href="https://institute.sektor7.net/red-team-operator-malware-development-essentials" target="_blank" rel="noopener">Sektor7 Malware Dev ↗</a>
+      <a class="resource-tag" href="https://vx-underground.org/" target="_blank" rel="noopener">VX Underground ↗</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── PHASE 6 ── -->
+<div class="phase p6" id="phase6">
+  <div class="phase-spine"><div class="phase-node"><div class="phase-node-num">06</div><div class="phase-node-label">PHASE</div></div></div>
+  <div class="phase-body">
+    <div class="phase-header">
+      <div class="phase-meta">
+        <div class="phase-eyebrow">Mastery · 36+ Months</div>
+        <div class="phase-name">TEAM LEAD <span>&amp; RESEARCH</span></div>
+        <div class="phase-desc">Lead engagements, write world-class reports, publish research, and mentor junior operators. Develop your own tools, contribute to the community, and specialize in a niche that commands top-tier compensation.</div>
+      </div>
+      <div class="phase-badges">
+        <div class="badge-duration">⏱ 36+ MONTHS</div>
+        <div class="badge-level">MASTER</div>
+      </div>
+    </div>
+    <div class="phase-progress"><span class="pp-label">PHASE PROGRESS</span><div class="pp-bar"><div class="pp-fill" id="pp6"></div></div><span class="pp-num" id="pn6">0 / 0</span></div>
+    <div class="modules">
+      <div class="module">
+        <div class="module-header"><div class="module-icon">📋</div><div class="module-title">Reporting &<br>Communication</div></div>
+        <label class="skill-item" data-phase="6"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Executive Report Writing</span><span class="skill-sub">Risk-based narratives, business impact, C-suite language</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="6"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Technical Findings Documentation</span><span class="skill-sub">Evidence chains, reproduction steps, remediation guidance</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="6"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Debriefs & Presentations</span><span class="skill-sub">Purple team exercises, kill chain walkthroughs with defenders</span></div><div class="skill-diff diff-med">MED</div></label>
+        <label class="skill-item" data-phase="6"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Threat Intelligence Integration</span><span class="skill-sub">APT TTP mapping, threat actor emulation, TIBER-EU</span></div><div class="skill-diff diff-hard">HARD</div></label>
+      </div>
+      <div class="module">
+        <div class="module-header"><div class="module-icon">🔬</div><div class="module-title">Research &<br>Tool Development</div></div>
+        <label class="skill-item" data-phase="6"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">CVE Discovery & PoC Writing</span><span class="skill-sub">Responsible disclosure, coordination, CVSS scoring</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+        <label class="skill-item" data-phase="6"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Open Source Tool Development</span><span class="skill-sub">GitHub community tools, Go/Rust/C# offensive tooling</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="6"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Conference Talks & Writing</span><span class="skill-sub">DEF CON, BlackHat, blog posts, research papers</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="6"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Bug Bounty Programs</span><span class="skill-sub">HackerOne, Bugcrowd, private programs — monetize your skills</span></div><div class="skill-diff diff-hard">HARD</div></label>
+      </div>
+      <div class="module">
+        <div class="module-header"><div class="module-icon">👑</div><div class="module-title">Specialization<br>Paths</div></div>
+        <label class="skill-item" data-phase="6"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">OT/ICS/SCADA Security</span><span class="skill-sub">Modbus, DNP3, Profinet — critical infrastructure</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+        <label class="skill-item" data-phase="6"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Mobile App Pentesting</span><span class="skill-sub">APK reverse engineering, iOS jailbreak, Frida hooking</span></div><div class="skill-diff diff-hard">HARD</div></label>
+        <label class="skill-item" data-phase="6"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">Hardware Hacking</span><span class="skill-sub">JTAG, UART, firmware extraction, side-channel</span></div><div class="skill-diff diff-expert">EXPERT</div></label>
+        <label class="skill-item" data-phase="6"><input type="checkbox"><div class="skill-box">✓</div><div class="skill-content"><span class="skill-name">AI/ML Security</span><span class="skill-sub">Prompt injection, model poisoning, adversarial inputs</span></div><div class="skill-diff diff-hard">HARD</div></label>
+      </div>
+    </div>
+    <div class="certs-row">
+      <span class="certs-label">TARGET CERTS //</span>
+      <a class="cert-pill gold" href="https://www.isc2.org/Certifications/CISSP" target="_blank" rel="noopener">CISSP ↗</a>
+      <a class="cert-pill gold" href="https://www.isaca.org/credentialing/cism" target="_blank" rel="noopener">CISM ↗</a>
+      <a class="cert-pill" href="https://www.giac.org/certifications/exploit-researcher-advanced-penetration-tester-gxpn/" target="_blank" rel="noopener">GXPN ↗</a>
+      <a class="cert-pill" href="https://www.giac.org/certifications/penetration-tester-gpen/" target="_blank" rel="noopener">SANS GPEN ↗</a>
+    </div>
+    <div class="resources-row">
+      <span class="certs-label">RESOURCES //</span>
+      <a class="resource-tag" href="https://www.youtube.com/@DEFCONConference" target="_blank" rel="noopener">DEF CON Talks ↗</a>
+      <a class="resource-tag" href="https://www.blackhat.com/arsenal.html" target="_blank" rel="noopener">BlackHat Arsenal ↗</a>
+      <a class="resource-tag" href="https://googleprojectzero.blogspot.com/" target="_blank" rel="noopener">Project Zero Blog ↗</a>
+      <a class="resource-tag" href="https://posts.specterops.io/" target="_blank" rel="noopener">SpecterOps Research ↗</a>
+    </div>
+  </div>
+</div>
+
+</div><!-- end phases-wrapper -->
+
+<!-- ══ TOOLS ARSENAL ══ -->
+<div class="tools-section">
+  <div class="tools-inner">
+    <div class="section-eyebrow">Weapons Cache</div>
+    <div class="section-title">Tools <em>Arsenal</em></div>
+    <div class="tools-matrix">
+      <div class="tool-cell" onclick="window.open('https://nmap.org','_blank')"><div class="tc-tag free">FREE</div><span class="tc-icon">🗺️</span><div class="tc-cat">SCANNING</div><div class="tc-name">Nmap ↗</div><div class="tc-desc">Network discovery & security auditing</div></div>
+      <div class="tool-cell" onclick="window.open('https://www.metasploit.com','_blank')"><div class="tc-tag free">FREE</div><span class="tc-icon">🐉</span><div class="tc-cat">EXPLOITATION</div><div class="tc-name">Metasploit ↗</div><div class="tc-desc">World's most used penetration testing framework</div></div>
+      <div class="tool-cell" onclick="window.open('https://portswigger.net/burp/pro','_blank')"><div class="tc-tag paid">PAID</div><span class="tc-icon">🔥</span><div class="tc-cat">WEB TESTING</div><div class="tc-name">Burp Suite Pro ↗</div><div class="tc-desc">Web vulnerability scanner & proxy</div></div>
+      <div class="tool-cell" onclick="window.open('https://bloodhound.readthedocs.io','_blank')"><div class="tc-tag free">FREE</div><span class="tc-icon">🩸</span><div class="tc-cat">ACTIVE DIRECTORY</div><div class="tc-name">BloodHound ↗</div><div class="tc-desc">AD attack path mapping via graph theory</div></div>
+      <div class="tool-cell" onclick="window.open('https://github.com/gentilkiwi/mimikatz','_blank')"><div class="tc-tag free">FREE</div><span class="tc-icon">🎭</span><div class="tc-cat">CREDENTIALS</div><div class="tc-name">Mimikatz ↗</div><div class="tc-desc">Extract plaintext passwords from Windows memory</div></div>
+      <div class="tool-cell" onclick="window.open('https://github.com/fortra/impacket','_blank')"><div class="tc-tag free">FREE</div><span class="tc-icon">📦</span><div class="tc-cat">NETWORK PROTO</div><div class="tc-name">Impacket ↗</div><div class="tc-desc">Python classes for network protocol work</div></div>
+      <div class="tool-cell" onclick="window.open('https://www.cobaltstrike.com','_blank')"><div class="tc-tag paid">PAID</div><span class="tc-icon">🎯</span><div class="tc-cat">C2 FRAMEWORK</div><div class="tc-name">Cobalt Strike ↗</div><div class="tc-desc">Threat emulation software for red teams</div></div>
+      <div class="tool-cell" onclick="window.open('https://github.com/BishopFox/sliver','_blank')"><div class="tc-tag free">FREE</div><span class="tc-icon">🌙</span><div class="tc-cat">C2 FRAMEWORK</div><div class="tc-name">Sliver ↗</div><div class="tc-desc">Open-source cross-platform implant framework</div></div>
+      <div class="tool-cell" onclick="window.open('https://hashcat.net/hashcat/','_blank')"><div class="tc-tag free">FREE</div><span class="tc-icon">🔑</span><div class="tc-cat">PASSWORD</div><div class="tc-name">Hashcat ↗</div><div class="tc-desc">World's fastest password cracker (GPU)</div></div>
+      <div class="tool-cell" onclick="window.open('https://github.com/kgretzky/evilginx2','_blank')"><div class="tc-tag free">FREE</div><span class="tc-icon">🍭</span><div class="tc-cat">PHISHING</div><div class="tc-name">Evilginx2 ↗</div><div class="tc-desc">MitM attack framework for credential harvest</div></div>
+      <div class="tool-cell" onclick="window.open('https://github.com/lgandx/Responder','_blank')"><div class="tc-tag free">FREE</div><span class="tc-icon">📻</span><div class="tc-cat">NETWORK POISON</div><div class="tc-name">Responder ↗</div><div class="tc-desc">LLMNR/NBT-NS poisoning & NTLM capture</div></div>
+      <div class="tool-cell" onclick="window.open('https://www.maltego.com','_blank')"><div class="tc-tag free">FREE</div><span class="tc-icon">🔭</span><div class="tc-cat">RECON</div><div class="tc-name">Maltego ↗</div><div class="tc-desc">Open-source intelligence & forensics</div></div>
+      <div class="tool-cell" onclick="window.open('https://github.com/nicocha30/ligolo-ng','_blank')"><div class="tc-tag free">FREE</div><span class="tc-icon">🕳️</span><div class="tc-cat">TUNNELING</div><div class="tc-name">Ligolo-ng ↗</div><div class="tc-desc">Advanced tunneling without SSH — reverse proxy</div></div>
+      <div class="tool-cell" onclick="window.open('https://ghidra-sre.org','_blank')"><div class="tc-tag free">FREE</div><span class="tc-icon">🔍</span><div class="tc-cat">REVERSE ENG</div><div class="tc-name">Ghidra ↗</div><div class="tc-desc">NSA's open-source software reverse engineering suite</div></div>
+      <div class="tool-cell" onclick="window.open('https://github.com/ffuf/ffuf','_blank')"><div class="tc-tag free">FREE</div><span class="tc-icon">⚡</span><div class="tc-cat">FUZZING</div><div class="tc-name">ffuf ↗</div><div class="tc-desc">Fast web fuzzer for content discovery</div></div>
+      <div class="tool-cell" onclick="window.open('https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1','_blank')"><div class="tc-tag free">FREE</div><span class="tc-icon">🐝</span><div class="tc-cat">AD ENUM</div><div class="tc-name">PowerView ↗</div><div class="tc-desc">PowerShell tool for AD situational awareness</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LABS ══ -->
+<section class="section">
+  <div class="section-eyebrow">Practice Environments</div>
+  <div class="section-title">Labs & <em>Platforms</em></div>
+  <div class="labs-grid">
+    <div class="lab-card" onclick="window.open('https://www.hackthebox.com','_blank')" style="cursor:pointer"><span class="lab-icon">📦</span><div class="lab-name">HackTheBox ↗</div><div class="lab-type">MACHINES · PRO LABS</div><div class="lab-desc">Industry-standard CTF platform with realistic machines and enterprise-grade Pro Labs (Offshore, RastaLabs, Cybernetics).</div><div class="lab-tags"><span class="lab-tag">BEGINNER</span><span class="lab-tag">ADVANCED</span><span class="lab-tag">ENTERPRISE AD</span></div></div>
+    <div class="lab-card" onclick="window.open('https://tryhackme.com','_blank')" style="cursor:pointer"><span class="lab-icon">🎓</span><div class="lab-name">TryHackMe ↗</div><div class="lab-type">GUIDED LEARNING PATHS</div><div class="lab-desc">Best structured learning platform for beginners. Guided rooms with theory + practical labs. Jr Penetration Tester path is gold.</div><div class="lab-tags"><span class="lab-tag">BEGINNER</span><span class="lab-tag">GUIDED</span><span class="lab-tag">BROWSER-BASED</span></div></div>
+    <div class="lab-card" onclick="window.open('https://portswigger.net/web-security','_blank')" style="cursor:pointer"><span class="lab-icon">🕷️</span><div class="lab-name">PortSwigger Academy ↗</div><div class="lab-type">WEB APP PENTESTING</div><div class="lab-desc">Free, world-class web security training by the Burp Suite creators. Covers every OWASP category with hands-on labs.</div><div class="lab-tags"><span class="lab-tag">FREE</span><span class="lab-tag">WEB ONLY</span><span class="lab-tag">BURP SUITE</span></div></div>
+    <div class="lab-card" onclick="window.open('https://pentesterlab.com','_blank')" style="cursor:pointer"><span class="lab-icon">🏆</span><div class="lab-name">PentesterLab ↗</div><div class="lab-type">WEB EXPLOITATION</div><div class="lab-desc">Deep dives into specific vulnerability classes. The Pro subscription unlocks source-code review challenges and advanced exploits.</div><div class="lab-tags"><span class="lab-tag">WEB</span><span class="lab-tag">SOURCE CODE</span><span class="lab-tag">PAID PRO</span></div></div>
+    <div class="lab-card" onclick="window.open('https://github.com/RhinoSecurityLabs/cloudgoat','_blank')" style="cursor:pointer"><span class="lab-icon">☁️</span><div class="lab-name">CloudGoat ↗</div><div class="lab-type">AWS VULNERABLE LAB</div><div class="lab-desc">Rhino Security's "vulnerable by design" AWS environment. Learn IAM privilege escalation, SSRF, and cloud misconfigurations.</div><div class="lab-tags"><span class="lab-tag">FREE</span><span class="lab-tag">AWS</span><span class="lab-tag">CLOUD</span></div></div>
+    <div class="lab-card" onclick="window.open('https://pwn.college','_blank')" style="cursor:pointer"><span class="lab-icon">💻</span><div class="lab-name">pwn.college ↗</div><div class="lab-type">BINARY EXPLOITATION</div><div class="lab-desc">ASU's cybersecurity dojo for binary exploitation, kernel exploitation, and system security — entirely free with Dojos format.</div><div class="lab-tags"><span class="lab-tag">FREE</span><span class="lab-tag">EXPLOIT DEV</span><span class="lab-tag">KERNEL</span></div></div>
+    <div class="lab-card" onclick="window.open('https://www.pentesteracademy.com','_blank')" style="cursor:pointer"><span class="lab-icon">🏰</span><div class="lab-name">Pentester Academy ↗</div><div class="lab-type">ACTIVE DIRECTORY LABS</div><div class="lab-desc">Best dedicated Active Directory attack labs. The Attacking and Defending AD course is a prerequisite for CRTE.</div><div class="lab-tags"><span class="lab-tag">PAID</span><span class="lab-tag">ACTIVE DIRECTORY</span><span class="lab-tag">CRTE PREP</span></div></div>
+    <div class="lab-card" onclick="window.open('https://www.vulnhub.com','_blank')" style="cursor:pointer"><span class="lab-icon">🌐</span><div class="lab-name">VulnHub ↗</div><div class="lab-type">OFFLINE VMs</div><div class="lab-desc">Free downloadable vulnerable VMs. Practice without internet dependency. OSCP-style machines available.</div><div class="lab-tags"><span class="lab-tag">FREE</span><span class="lab-tag">OFFLINE</span><span class="lab-tag">OSCP PREP</span></div></div>
+  </div>
+</section>
+
+<!-- ══ CAREERS ══ -->
+<section class="section" style="padding-top:0;">
+  <div class="section-eyebrow">Where This Takes You</div>
+  <div class="section-title">Career <em>Paths</em></div>
+  <div class="careers-grid">
+    <div class="career-card"><span class="career-icon">🔴</span><div class="career-title">Red Team Operator</div><div class="career-salary">$130K – $200K</div><div class="career-desc">Full engagement execution, adversary simulation, C2 ops</div></div>
+    <div class="career-card"><span class="career-icon">🌐</span><div class="career-title">Web App Pentester</div><div class="career-salary">$100K – $160K</div><div class="career-desc">Specialized web & API assessments, bug bounty</div></div>
+    <div class="career-card"><span class="career-icon">☁️</span><div class="career-title">Cloud Pentester</div><div class="career-salary">$140K – $220K</div><div class="career-desc">AWS/Azure/GCP security assessments, IAM attacks</div></div>
+    <div class="career-card"><span class="career-icon">🔬</span><div class="career-title">Exploit Researcher</div><div class="career-salary">$160K – $300K+</div><div class="career-desc">0-day research, CVE discovery, defensive tooling</div></div>
+    <div class="career-card"><span class="career-icon">🎯</span><div class="career-title">Red Team Lead</div><div class="career-salary">$180K – $280K</div><div class="career-desc">Program management, client relations, team mentorship</div></div>
+    <div class="career-card"><span class="career-icon">🐛</span><div class="career-title">Bug Bounty Hunter</div><div class="career-salary">$50K – $500K+</div><div class="career-desc">Independent, self-directed, P1 critical findings</div></div>
+  </div>
+</section>
+
+<!-- ══ LEGAL ══ -->
+<div class="legal-section">
+  <div class="legal-box">
+    <div class="legal-title">⚠ Authorized Use Only</div>
+    <div class="legal-text">
+      <strong>CRITICAL:</strong> Every technique in this roadmap must only be practiced on systems you own or have <strong>explicit written authorization</strong> to test. Unauthorized access is a criminal offense under the <strong>CFAA (USA)</strong>, <strong>Computer Misuse Act (UK)</strong>, and equivalent laws worldwide — regardless of skill level or intent.<br><br>
+      Always obtain a signed <strong>Rules of Engagement (RoE)</strong> document before any engagement. Scope boundaries are legally binding. Practice exclusively in <strong>dedicated lab environments</strong> (VMs, HTB, THM, home labs). Report discovered vulnerabilities through <strong>responsible disclosure</strong> channels. Use the <strong>MITRE ATT&CK framework</strong> to document TTPs during authorized engagements only.
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">RED TEAM ROADMAP 2025</div>
+    <div class="footer-sub">MITRE ATT&CK · PTES · OWASP · NIST SP 800-115 · OSSTMM · PTES</div>
+    <div class="footer-credit">
+      <span id="footer-year"></span> &copy;
+      <a href="https://github.com/crusveder" target="_blank" rel="noopener" class="footer-author">crusveder</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Intersection Observer for phase animations ──
+const phases = document.querySelectorAll('.phase');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+phases.forEach(p => observer.observe(p));
+
+// ── Storage key ──
+const STORAGE_KEY = 'redteam_roadmap_progress';
+
+// ── Save checkbox state to localStorage ──
+function saveProgress() {
+  const state = {};
+  document.querySelectorAll('input[type=checkbox]').forEach((cb, idx) => {
+    const id = cb.id || cb.closest('[data-phase]')?.dataset.phase + '_' + idx;
+    state[id] = cb.checked;
+  });
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch(e) {
+    console.warn('Could not save progress:', e);
+  }
+}
+
+// ── Load checkbox state from localStorage ──
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const state = JSON.parse(raw);
+    document.querySelectorAll('input[type=checkbox]').forEach((cb, idx) => {
+      const id = cb.id || cb.closest('[data-phase]')?.dataset.phase + '_' + idx;
+      if (state[id] !== undefined) cb.checked = state[id];
+    });
+  } catch(e) {
+    console.warn('Could not load progress:', e);
+  }
+}
+
+// ── Progress tracking ──
+function updateProgress() {
+  let totalChecked = 0, totalAll = 0;
+  for (let i = 1; i <= 6; i++) {
+    const all = document.querySelectorAll(`[data-phase="${i}"] input[type=checkbox]`);
+    const checked = document.querySelectorAll(`[data-phase="${i}"] input[type=checkbox]:checked`);
+    const pct = all.length ? Math.round(checked.length / all.length * 100) : 0;
+    const fill = document.getElementById(`pp${i}`);
+    const num = document.getElementById(`pn${i}`);
+    const cmd = document.getElementById(`cp${i}`);
+    if (fill) fill.style.width = pct + '%';
+    if (num) num.textContent = `${checked.length} / ${all.length}`;
+    if (cmd) cmd.style.width = pct + '%';
+    totalChecked += checked.length;
+    totalAll += all.length;
+  }
+  const total = totalAll ? Math.round(totalChecked / totalAll * 100) : 0;
+  const topEl = document.getElementById('totalPctTop');
+  const heroEl = document.getElementById('heroCompletedNum');
+  if (topEl) topEl.textContent = total;
+  if (heroEl) heroEl.textContent = total + '%';
+}
+
+// ── Checkbox click handler ──
+document.querySelectorAll('.skill-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const cb = item.querySelector('input[type=checkbox]');
+    if (cb) {
+      cb.checked = !cb.checked;
+      updateProgress();
+      saveProgress();
+    }
+  });
+});
+
+// ── Reset button (optional — add data-reset-progress to any element) ──
+document.querySelectorAll('[data-reset-progress]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (confirm('Reset all progress?')) {
+      localStorage.removeItem(STORAGE_KEY);
+      document.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+      updateProgress();
+    }
+  });
+});
+
+// ── Dynamic footer year ──
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+// ── Init: load saved state then update UI ──
+loadProgress();
+updateProgress();
+</script>
+</body>
+</html>
